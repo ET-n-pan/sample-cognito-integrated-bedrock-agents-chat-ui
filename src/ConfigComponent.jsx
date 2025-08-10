@@ -44,7 +44,7 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
     strands: {
       enabled: false,
       lambdaArn: '',
-      agentName: 'Strands Agent',
+      agentName: 'Strandsエージェント',
       region: ''
     }
   });
@@ -68,38 +68,38 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
     
     // Validate Cognito fields
     if (!config.cognito.userPoolId.trim()) {
-      newErrors.userPoolId = 'User Pool ID is required';
+      newErrors.userPoolId = 'ユーザープールIDは必須です';
     }
     if (!config.cognito.userPoolClientId.trim()) {
-      newErrors.userPoolClientId = 'User Pool Client ID is required';
+      newErrors.userPoolClientId = 'ユーザープールクライアントIDは必須です';
     }
     if (!config.cognito.identityPoolId.trim()) {
-      newErrors.identityPoolId = 'Identity Pool ID is required';
+      newErrors.identityPoolId = 'アイデンティティプールIDは必須です';
     }
     if (!config.cognito.region.trim()) {
-      newErrors.cognitoRegion = 'Cognito Region is required';
+      newErrors.cognitoRegion = 'Cognitoリージョンは必須です';
     }
 
     // Validate Bedrock fields if Strands Agent is not enabled
     if (!config.strands.enabled) {
       if (!config.bedrock.agentId.trim()) {
-        newErrors.agentId = 'Agent ID is required';
+        newErrors.agentId = 'エージェントIDは必須です';
       }
       if (!config.bedrock.agentAliasId.trim()) {
-        newErrors.agentAliasId = 'Agent Alias ID is required';
+        newErrors.agentAliasId = 'エージェントエイリアスIDは必須です';
       }
       if (!config.bedrock.region.trim()) {
-        newErrors.bedrockRegion = 'Bedrock Region is required';
+        newErrors.bedrockRegion = 'Bedrockリージョンは必須です';
       }
     }
     
     // Validate Strands fields if enabled
     if (config.strands.enabled) {
       if (!config.strands.lambdaArn.trim()) {
-        newErrors.lambdaArn = 'Lambda ARN is required';
+        newErrors.lambdaArn = 'Lambda ARNは必須です';
       }
       if (!config.strands.region.trim()) {
-        newErrors.strandsRegion = 'Region is required';
+        newErrors.strandsRegion = 'リージョンは必須です';
       }
     }
 
@@ -117,7 +117,7 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
         parsedConfig.strands = {
           enabled: false,
           lambdaArn: '',
-          agentName: 'Strands Agent',
+          agentName: 'Strandsエージェント',
           region: ''
         };
       }
@@ -180,11 +180,11 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
           <div style={{ width: '100%', marginBottom: '10px', borderBottom: '1px solid #c3c3c3', paddingBottom: '5px'}}>
             <Header
               variant="h1"
-              description="Let's configure your Amazon Bedrock Agent client application"
+              description="Amazon Bedrockエージェントクライアントアプリケーションを設定しましょう"
               headingTagOverride="h1"
               textAlign="left"
             >
-              Welcome
+              ようこそ
             </Header>
           </div>
           
@@ -193,10 +193,10 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
               actions={
                 <SpaceBetween direction="horizontal" size="xs">
                   <Button variant="primary" formAction="submit">
-                    {isEditingConfig ? "Update configuration" : "Save configuration"}
+                    {isEditingConfig ? "設定を更新" : "設定を保存"}
                   </Button>
                   <Button variant="link" onClick={() => setEditingConfig(false)}>
-                    Cancel
+                    キャンセル
                   </Button>
                 </SpaceBetween>
               }
@@ -204,19 +204,19 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
               <SpaceBetween size="l">
                 <Container
                   header={
-                    <Header variant="h2">Amazon Cognito setup</Header>
+                    <Header variant="h2">Amazon Cognito設定</Header>
                   }
                 >
                   <SpaceBetween size="l">
                     <FormField 
-                      label="User Pool ID" 
+                      label="ユーザープールID" 
                       isRequired 
                       errorText={errors.userPoolId}
                     >
                       <Input
                         value={config.cognito.userPoolId}
                         isRequired
-                        placeholder='e.g. us-east-1_uXboG5pAb'
+                        placeholder='例: us-east-1_uXboG5pAb'
                         onChange={({ detail }) => {
                           handleInputChange('cognito', 'userPoolId', detail.value);
                           setErrors({...errors, userPoolId: ''});
@@ -224,14 +224,14 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                       />
                     </FormField>
                     <FormField 
-                      label="User Pool Client ID" 
+                      label="ユーザープールクライアントID" 
                       isRequired 
                       errorText={errors.userPoolClientId}
                     >
                       <Input
                         value={config.cognito.userPoolClientId}
                         isRequired
-                        placeholder='e.g. 25ddkmj4v6hfsfvruhpfi7n4hv'
+                        placeholder='例: 25ddkmj4v6hfsfvruhpfi7n4hv'
                         onChange={({ detail }) => {
                           handleInputChange('cognito', 'userPoolClientId', detail.value);
                           setErrors({...errors, userPoolClientId: ''});
@@ -239,14 +239,14 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                       />
                     </FormField>
                     <FormField 
-                      label="Identity Pool ID" 
+                      label="アイデンティティプールID" 
                       isRequired
                       errorText={errors.identityPoolId}
                     >
                       <Input
                         value={config.cognito.identityPoolId}
                         isRequired
-                        placeholder='e.g. us-east-1:a0421ced-2ae0-45ab-a503-21f6f23c5562'
+                        placeholder='例: us-east-1:a0421ced-2ae0-45ab-a503-21f6f23c5562'
                         onChange={({ detail }) => {
                           handleInputChange('cognito', 'identityPoolId', detail.value);
                           setErrors({...errors, identityPoolId: ''});
@@ -254,14 +254,14 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                       />
                     </FormField>
                     <FormField 
-                      label="Region" 
+                      label="リージョン" 
                       isRequired
                       errorText={errors.cognitoRegion}
                     >
                       <Input
                         value={config.cognito.region}
                         isRequired
-                        placeholder='e.g. us-east-1'
+                        placeholder='例: us-east-1'
                         onChange={({ detail }) => {
                           handleInputChange('cognito', 'region', detail.value);
                           setErrors({...errors, cognitoRegion: ''});
@@ -273,17 +273,17 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
             
                 <Container
                   header={
-                    <Header variant="h2">Agent Selection</Header>
+                    <Header variant="h2">エージェント選択</Header>
                   }
                 >
                   <SpaceBetween size="l">
                     <FormField 
-                      label="Select Agent Type"
+                      label="エージェントタイプを選択"
                     >
                       <Select
                         selectedOption={{
                           value: config.strands.enabled ? 'strands' : 'bedrock',
-                          label: config.strands.enabled ? 'Strands Agent' : 'Bedrock Agent'
+                          label: config.strands.enabled ? 'Strandsエージェント' : 'Bedrockエージェント'
                         }}
                         onChange={({ detail }) => {
                           setConfig(prevConfig => ({
@@ -295,8 +295,8 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                           }));
                         }}
                         options={[
-                          { value: 'bedrock', label: 'Bedrock Agent' },
-                          { value: 'strands', label: 'Strands Agent' }
+                          { value: 'bedrock', label: 'Bedrockエージェント' },
+                          { value: 'strands', label: 'Strandsエージェント' }
                         ]}
                       />
                     </FormField>
@@ -306,17 +306,17 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                 {!config.strands.enabled && (
                   <Container
                     header={
-                      <Header variant="h2">Amazon Bedrock Agent setup</Header>
+                      <Header variant="h2">Amazon Bedrockエージェント設定</Header>
                     }
                   >
                     <SpaceBetween size="l">
                       <FormField 
-                        label="Agent Name"
+                        label="エージェント名"
                         errorText={errors.agentName}
                       >
                         <Input
                           value={config.bedrock.agentName}
-                          placeholder='e.g. MyAgent'
+                          placeholder='例: MyAgent'
                           onChange={({ detail }) => {
                             handleInputChange('bedrock', 'agentName', detail.value);
                             setErrors({...errors, agentName: ''});
@@ -324,14 +324,14 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                         />
                       </FormField>
                       <FormField 
-                        label="Agent ID" 
+                        label="エージェントID" 
                         isRequired
                         errorText={errors.agentId}
                       >
                         <Input
                           value={config.bedrock.agentId}
                           isRequired
-                          placeholder='e.g. UF1W5WKVYI'
+                          placeholder='例: UF1W5WKVYI'
                           onChange={({ detail }) => {
                             handleInputChange('bedrock', 'agentId', detail.value);
                             setErrors({...errors, agentId: ''});
@@ -339,14 +339,14 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                         />
                       </FormField>
                       <FormField 
-                        label="Agent Alias ID" 
+                        label="エージェントエイリアスID" 
                         isRequired
                         errorText={errors.agentAliasId}
                       >
                         <Input
                           value={config.bedrock.agentAliasId}
                           isRequired
-                          placeholder='e.g. TSTALIASID (by default will point to your draft)'
+                          placeholder='例: TSTALIASID (デフォルトではドラフトを指します)'
                           onChange={({ detail }) => {
                             handleInputChange('bedrock', 'agentAliasId', detail.value);
                             setErrors({...errors, agentAliasId: ''});
@@ -354,14 +354,14 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                         />
                       </FormField>
                       <FormField 
-                        label="Region" 
+                        label="リージョン" 
                         isRequired
                         errorText={errors.bedrockRegion}
                       >
                         <Input
                           value={config.bedrock.region}
                           isRequired
-                          placeholder='e.g. us-east-1'
+                          placeholder='例: us-east-1'
                           onChange={({ detail }) => {
                             handleInputChange('bedrock', 'region', detail.value);
                             setErrors({...errors, bedrockRegion: ''});
@@ -375,17 +375,17 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                 {config.strands.enabled && (
                   <Container
                     header={
-                      <Header variant="h2">Strands Agent setup</Header>
+                      <Header variant="h2">Strandsエージェント設定</Header>
                     }
                   >
                     <SpaceBetween size="l">
                       <FormField 
-                        label="Agent Name"
+                        label="エージェント名"
                         errorText={errors.strandsAgentName}
                       >
                         <Input
                           value={config.strands.agentName}
-                          placeholder='e.g. Weather Agent'
+                          placeholder='例: 天気エージェント'
                           onChange={({ detail }) => {
                             handleInputChange('strands', 'agentName', detail.value);
                             setErrors({...errors, strandsAgentName: ''});
@@ -400,7 +400,7 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                         <Input
                           value={config.strands.lambdaArn}
                           isRequired
-                          placeholder='e.g. arn:aws:lambda:us-east-1:123456789012:function:my-strands-agent'
+                          placeholder='例: arn:aws:lambda:us-east-1:123456789012:function:my-strands-agent'
                           onChange={({ detail }) => {
                             handleInputChange('strands', 'lambdaArn', detail.value);
                             setErrors({...errors, lambdaArn: ''});
@@ -408,15 +408,15 @@ const ConfigComponent = ({ onConfigSet, isEditingConfig, setEditingConfig }) => 
                         />
                       </FormField>
                       <FormField 
-                        label="Region" 
+                        label="リージョン" 
                         isRequired
                         errorText={errors.strandsRegion}
-                        description="Automatically detected from Lambda ARN if valid"
+                        description="有効なLambda ARNから自動検出されます"
                       >
                         <Input
                           value={config.strands.region}
                           isRequired
-                          placeholder='e.g. us-east-1'
+                          placeholder='例: us-east-1'
                           disabled={!!extractRegionFromLambdaArn(config.strands.lambdaArn)}
                           onChange={({ detail }) => {
                             handleInputChange('strands', 'region', detail.value);

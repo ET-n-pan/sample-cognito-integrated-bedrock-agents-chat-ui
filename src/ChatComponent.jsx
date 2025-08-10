@@ -386,7 +386,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
           } else if (parsedResponse.response) {
             responseText = parsedResponse.response;
           } else {
-            responseText = "Sorry, I couldn't process your request.";
+            responseText = "申し訳ありませんが、リクエストを処理できませんでした。";
           }
 
           agentMessage = { text: normalizeText(responseText), sender: agentName.value };
@@ -403,7 +403,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
 
         let errReason = "**"+String(err).toString()+"**";
 
-        const errorMessage = { text: `An error occurred while processing your request:\n${errReason}`, sender: 'agent' };
+        const errorMessage = { text: `リクエストの処理中にエラーが発生しました：\n${errReason}`, sender: 'agent' };
         setMessages(prevMessages => [...prevMessages, errorMessage]);
         storeMessages(sessionId, [userMessage, errorMessage]);
       } finally {
@@ -432,7 +432,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
           <TopNavigation
             identity={{
               href: "#",
-              title: `Chat with ${agentName.value}`,
+              title: `${agentName.value}とチャット`,
             }}
             utilities={
               [
@@ -440,8 +440,8 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                 {
                   type: "button",
                   iconName: "add-plus",
-                  title: "Start a new conversation",
-                  ariaLabel: "Start a new conversation",
+                  title: "新しい会話を始める",
+                  ariaLabel: "新しい会話を始める",
                   disableUtilityCollapse: true,
                   onClick: () => createNewSession()
                 },
@@ -449,8 +449,8 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                 {
                   type: "menu-dropdown",
                   iconName: "settings",
-                  ariaLabel: "Settings",
-                  title: "Settings",
+                  ariaLabel: "設定",
+                  title: "設定",
                   disableUtilityCollapse: true,
                   onItemClick: ({ detail }) => {
                     switch (detail.id) {
@@ -467,11 +467,11 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                       id: "clear-settings",
                       type: "button",
                       iconName: "remove",
-                      text: "Clear settings and local storage",
+                      text: "設定とローカルストレージをクリア",
                     },
                     {
                       id: "edit-settings",
-                      text: "Edit Settings",
+                      text: "設定を編集",
                       iconName: "edit",
                       type: "icon-button",
                     }
@@ -483,7 +483,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                   text: user.username,
                   iconName: "user-profile",
                   title: user.username,
-                  ariaLabel: "User",
+                  ariaLabel: "ユーザー",
                   disableUtilityCollapse: true,
                   onItemClick: ({ detail }) => {
                     switch (detail.id) {
@@ -495,7 +495,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                   items: [
                     {
                       id: "logout",
-                      text: "Logout",
+                      text: "ログアウト",
                       iconName: "exit",
                       type: "icon-button",
                     }
@@ -540,7 +540,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
 				return (
 					<div key={index}>
 					<ChatBubble
-						ariaLabel={`${message.sender} message`}
+						ariaLabel={`${message.sender} メッセージ`}
 						type={message.sender === user.username ? "outgoing" : "incoming"}
 						avatar={
 						<Avatar
@@ -555,7 +555,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
 						{isAgentHtml ? (
 						<div style={{ marginTop: 12 }}>
 							<div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6, width: "100vw" }}>
-								HTML Preview
+								HTMLプレビュー
 							</div>
 							<PreviewIframe html={htmlForDownload} />
 							<button 
@@ -570,7 +570,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
 							}}
 							onClick={handleDownload}
 							>
-							Download HTML
+							HTMLをダウンロード
 							</button>
 						</div>
 						):
@@ -599,14 +599,14 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                 >
                   {!isStrandsAgent && tasksCompleted.count > 0 && (
                     <div>
-                      {agentName.value} is working on your request | Tasks completed ({tasksCompleted.count})
+                      {agentName.value}がリクエストを処理中 | 完了したタスク ({tasksCompleted.count})
                       <br />
                       <i>{tasksCompleted.latestRationale}</i>
                     </div>
                   )}
                   {isStrandsAgent && (
                     <div>
-                      {agentName.value} is processing your request...
+                      {agentName.value}がリクエストを処理中...
                     </div>
                   )}
                   <LoadingBar variant="gen-ai" />
@@ -622,7 +622,7 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                   <button
                     type="button"
                     onClick={isListening ? stopListening : startListening}
-                    title={isListening ? "Stop Listening" : "Start Listening"}
+                    title={isListening ? "聞き取り停止" : "聞き取り開始"}
                     className="mic-button"
                     hidden={!speechRecognitionSupported}
                   >
@@ -641,8 +641,8 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                       type='text'
                       value={newMessage}
                       onChange={({ detail }) => setNewMessage(detail.value)}
-                      placeholder='Type your question here...'
-                      actionButtonAriaLabel="Send message"
+                      placeholder='ここに質問を入力してください...'
+                      actionButtonAriaLabel="メッセージを送信"
                       actionButtonIconName="send"
                     />
                   </div>
@@ -657,17 +657,17 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
           <Modal
             onDismiss={() => setShowClearDataModal(false)}
             visible={showClearDataModal}
-            header="Confirm clearing data"
+            header="データクリアの確認"
             footer={
               <Box float="right">
                 <SpaceBetween direction="horizontal" size="xs">
-                  <Button variant="link" onClick={() => setShowClearDataModal(false)}>Cancel</Button>
-                  <Button variant="primary" onClick={confirmClearData}>Ok</Button>
+                  <Button variant="link" onClick={() => setShowClearDataModal(false)}>キャンセル</Button>
+                  <Button variant="primary" onClick={confirmClearData}>OK</Button>
                 </SpaceBetween>
               </Box>
             }
           >
-            <strong>This action cannot be undone.</strong> Configuration for this application will be deleted along with the chat history with {agentName.value}. Do you want to continue?
+            <strong>この操作は元に戻せません。</strong> このアプリケーションの設定と{agentName.value}とのチャット履歴が削除されます。続行しますか？
           </Modal>
         </div>
       </Container>
