@@ -17,11 +17,69 @@ import {
   SpaceBetween,
   TopNavigation
 } from "@cloudscape-design/components";
+import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import * as AWSAuth from '@aws-amplify/auth';
 import { BedrockAgentRuntimeClient, InvokeAgentCommand } from "@aws-sdk/client-bedrock-agent-runtime";
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
 import './ChatComponent.css';
+import PreviewIframe from './PreviewIframe';
+
+
+function isHTML(text) {
+  // Simple check: starts with <html or <body or <!DOCTYPE
+  return /^\s*<(html|body|!DOCTYPE)/i.test(text.trim());
+}
+
+function isHtmlLike(text) {
+  const cleaned = text.trim();
+  // Detect full HTML document
+  if (/^<!DOCTYPE\s+html>/i.test(cleaned) ||
+      /^<html[\s>]/i.test(cleaned) ||
+      /^<body[\s>]/i.test(cleaned)) {
+    return true;
+  }
+  // Detect if starts with any HTML tag
+  if (/^<([a-z]+)(\s|>|\/)/i.test(cleaned)) {
+    return true;
+  }
+  // Detect significant HTML fragments (any common block-level tag)
+  if (/<(div|section|article|header|footer|nav|table|ul|ol|li|h[1-6]|p|img|form|input|button|span|a)[\s>]/i.test(cleaned)) {
+    return true;
+  }
+  return false;
+}
+
+function wrapHtmlIfFragment(text) {
+  const cleaned = text.trim();
+  // If already a full HTML doc, return as is
+  if (/^<!DOCTYPE\s+html>/i.test(cleaned) ||
+      /^<html[\s>]/i.test(cleaned)) {
+    return cleaned;
+  }
+  // Otherwise, wrap as a minimal HTML doc
+  return (
+    `<!DOCTYPE html>\n` +
+    `<html lang="en">\n` +
+    `<head>\n<meta charset="UTF-8">\n<title>AI Generated HTML</title>\n</head>\n` +
+    `<body>\n${cleaned}\n</body>\n</html>`
+  );
+}
+function extractHtmlBlock(text) {
+  // console.log('Extracting HTML block from:', text);
+  const doctypeMatch = text.match(/<!DOCTYPE\s+html[^>]*>\s*<html[\s\S]*?<\/html>/i);
+  if (doctypeMatch) return doctypeMatch[0];
+
+  const htmlMatch = text.match(/<html[\s\S]*?<\/html>/i);
+  if (htmlMatch) return htmlMatch[0];
+
+  return text; 
+}
+
+function normalizeText(text) {
+  
+  return text.replace(/\\n/g, '\n');
+}
 
 /**
  * Main chat interface component that handles message interaction with Bedrock agent
@@ -330,8 +388,8 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
           } else {
             responseText = "Sorry, I couldn't process your request.";
           }
-          
-          agentMessage = { text: responseText, sender: agentName.value };
+
+          agentMessage = { text: normalizeText(responseText), sender: agentName.value };
         } else {
           throw new Error("No agent client available");
         }
@@ -451,31 +509,87 @@ const ChatComponent = ({ user, onLogout, onConfigEditorClick }) => {
                 </div>
               </div> */}
           <div className="messages-container scrollable">
-            {messages.map((message, index) => (
-              <div key={index}>
-                <ChatBubble
-                  ariaLabel={`${message.sender} message`}
-                  type={message.sender === user.username ? "outgoing" : "incoming"}
-                  avatar={
-                    <Avatar
-                      ariaLabel={message.sender}
-                      tooltipText={message.sender}
-                      color={message.sender === user.username ? "default" : "gen-ai"}
-                      initials={message.sender.substring(0, 2).toUpperCase()}
-                    />
-                  }
-                >
-                  {message.text.split('\n').map((line, i) => (
-                    <ReactMarkdown
-                      key={'md-rendering' + i}
-                      rehypePlugins={[rehypeRaw]} // Enables HTML parsing
-                    >
-                      {line}
-                    </ReactMarkdown>
-                  ))}
-                </ChatBubble>
-              </div>
-            ))}
+            {messages.map((message, index) => {
+				const isAgentHtml = message.sender !== user.username && isHtmlLike(message.text);
+
+				let htmlContent, htmlForDownload;
+				if (isAgentHtml) {
+					htmlForDownload = wrapHtmlIfFragment(message.text); // For download
+					htmlContent = DOMPurify.sanitize(htmlForDownload);  // For preview
+				}
+
+				const handleDownload = () => {
+          const htmlForDownload = extractHtmlBlock(message.text);
+					const blob = new Blob([htmlForDownload], { type: "text/html" });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement("a");
+					a.href = url;
+					a.download = "agent_output.html";
+					document.body.appendChild(a);
+					a.click();
+					setTimeout(() => {
+					URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+					}, 0);
+				};
+
+
+
+				
+
+				return (
+					<div key={index}>
+					<ChatBubble
+						ariaLabel={`${message.sender} message`}
+						type={message.sender === user.username ? "outgoing" : "incoming"}
+						avatar={
+						<Avatar
+							ariaLabel={message.sender}
+							tooltipText={message.sender}
+							color={message.sender === user.username ? "default" : "gen-ai"}
+							initials={message.sender.substring(0, 2).toUpperCase()}
+						/>
+						}
+					>
+						{/* Show preview and download for agent HTML */}
+						{isAgentHtml ? (
+						<div style={{ marginTop: 12 }}>
+							<div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6, width: "100vw" }}>
+								HTML Preview
+							</div>
+							<PreviewIframe html={htmlForDownload} />
+							<button 
+							style={{
+								marginTop: 6, 
+								padding: "4px 12px",
+								border: "1px solid #ccc",
+								borderRadius: 4,
+								background: "#1aba55ff",
+								fontSize: 13,
+								cursor: "pointer"
+							}}
+							onClick={handleDownload}
+							>
+							Download HTML
+							</button>
+						</div>
+						):
+							(
+								normalizeText(message.text).split('\n').map((line, i) => (
+								<ReactMarkdown
+									key={'md-rendering' + i}
+									rehypePlugins={[rehypeRaw]}
+								>
+									{line}
+								</ReactMarkdown>
+								))
+							)
+						}
+
+					</ChatBubble>
+					</div>
+				);
+			})}
             <div ref={messagesEndRef} />
             {isAgentResponding && (
               <LiveRegion>
